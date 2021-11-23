@@ -1,14 +1,14 @@
 ﻿using System.Data.OleDb;
 using System.Data;
 
-namespace cyrs_git.Controller
+namespace Sample.Controller
 {
     class Query
     {
-        OleDbConnection connection;
-        OleDbCommand command;
-        OleDbDataAdapter dataAdapter;
-        DataTable dt;
+        OleDbConnection     connection;
+        OleDbCommand        command;
+        OleDbDataAdapter    dataAdapter;
+        DataTable           dt;
 
         public Query(string Conn)
         {
