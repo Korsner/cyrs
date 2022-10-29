@@ -7,7 +7,7 @@ namespace Sample
 {
     public partial class Form3 : Form
     {
-        Query controller;
+        readonly Query controller;
 
         public Form3()
         {
@@ -23,14 +23,14 @@ namespace Sample
             dataGridView1.DataSource = table3;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
         //UPDATE PTS SET ContactName = 'Alfred Schmidt', City = 'Frankfurt' WHERE UNTS = 1;
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             controller.Edit(BuildUpdate());
             //BuildUpdate();
