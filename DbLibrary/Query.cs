@@ -14,6 +14,15 @@ FROM(
 INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT 
 GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;";
 
+        public static string ReadDetailedData = @"
+SELECT PTS.UIN AS ID, V_FIRM.TLGR AS Фирма, PTS.UNTS AS [Учетный номер ТС],VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.GRP AS [Грузоподъёмность], PTS.NORMT AS [Расход топлива] 
+FROM (
+    (V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) 
+    INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) 
+INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT 
+GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT, PTS.UIN;
+";
+
         public static string ReadDataByTLGR = @"
 SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] 
 FROM(
@@ -65,6 +74,14 @@ GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;
 
         public static string TipTRFilter = "SELECT TID FROM TIPTR WHERE TNAME = @TNAME;";
 
+        public static string UpdatePTS = @"
+UPDATE PTS SET 
+    UNTS = COALESCE(@UNTS1, UNTS), 
+    TID = COALESCE(@TID, TID),
+    FIRMID = COALESCE(@FIRMID, FIRMID), 
+    GRP = COALESCE(@GRP, GRP),
+    NORMT = COALESCE(@NORMT, NORMT),
+WHERE UNTS = @UNTS2";
     }
 
     public class Query
@@ -89,6 +106,8 @@ GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;
         }
 
         public DataTable ReadData() => ReadData(new OleDbCommand(SQL.ReadData, connection));
+
+        public DataTable ReadDetailedData() => ReadData(new OleDbCommand(SQL.ReadDetailedData, connection));
 
         public DataTable ReadDataByTLGR(string tlgr)
         {
@@ -138,21 +157,17 @@ GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;
             return ReadData(command);
         }
 
-        public DataTable Update(string select)
-        {
-            var dt = new DataTable();
-            connection.Open();
-            dataAdapter = new OleDbDataAdapter(select, connection);
-            dt.Clear();
-            dataAdapter.Fill(dt);
-            connection.Close();
-            return dt;
-        }
-
-        public void Edit(string edit)
+        public void UpdatePTS(string unts1, string tId, string firmId, 
+            string grp, string normt, string unts2)
         {
             connection.Open();
-            command = new OleDbCommand(edit, connection);
+            var command = new OleDbCommand(SQL.UpdatePTS, connection);
+            command.Parameters.Add("UNTS1", unts1);
+            command.Parameters.Add("TID", tId);
+            command.Parameters.Add("FIRMID", firmId);
+            command.Parameters.Add("GRP", grp);
+            command.Parameters.Add("NORMT", normt);
+            command.Parameters.Add("UNTS2", unts2);
             command.ExecuteNonQuery();
             connection.Close();
         }
