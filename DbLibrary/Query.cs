@@ -1,9 +1,9 @@
 ﻿using System.Data.OleDb;
 using System.Data;
 
-namespace Sample.Controller
+namespace DbLibrary.Controller
 {
-    class Query
+    public class Query
     {
         OleDbConnection     connection;
         OleDbCommand        command;
