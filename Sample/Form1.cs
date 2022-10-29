@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Sample.Controller;
+using System;
 using System.Data;
 using System.Windows.Forms;
-using Sample.Controller;
 
 namespace Sample
 {
     public partial class Form1 : Form
     {
-        Query controller;
+        readonly Query controller;
 
         public Form1()
         {
@@ -15,27 +15,25 @@ namespace Sample
             controller = new Query(ConnectionString.ConnStr);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             Form3 newForm = new Form3();
             newForm.Show();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             Form2 newForm = new Form2();
             newForm.Show();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
-            //MessageBox.Show((int.Parse(dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells["Учетный номер ТС"].Value.ToString())).ToString());
             controller.Delete(int.Parse(dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells["Учетный номер ТС"].Value.ToString()));
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //treeView1.BeginUpdate();
             NodeBuilder();
         }
 
@@ -63,42 +61,31 @@ namespace Sample
             }
         }
 
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            //MessageBox.Show(treeView1.SelectedNode.Name);
-            //MessageBox.Show(treeView1.SelectedNode.Level.ToString());
             int caseSwitch = treeView1.SelectedNode.Level;
-            //MessageBox.Show(treeView1.SelectedNode.Level.ToString());
-            DataTable table0;
-            DataTable table1;
-            DataTable table2;
-            DataTable table3;
+            DataTable table;
             switch (caseSwitch)
             {
                 case 0:
-                    table0 = controller.Update($"SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE V_FIRM.TLGR = '{treeView1.SelectedNode.Name}' GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
-                    dataGridView1.DataSource = table0;
+                    table = controller.Update($"SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE V_FIRM.TLGR = '{treeView1.SelectedNode.Name}' GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
                     break;
                 case 1:
-                    table1 = controller.Update($"SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE VIDTC.SHNAME = '{treeView1.SelectedNode.Name}' GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
-                    dataGridView1.DataSource = table1;
+                    table = controller.Update($"SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE VIDTC.SHNAME = '{treeView1.SelectedNode.Name}' GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
                     break;
                 case 2:
-                    table2 = controller.Update($"SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE TIPTR.TNAME = '{treeView1.SelectedNode.Name}' GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
-                    dataGridView1.DataSource = table2;
+                    table = controller.Update($"SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE TIPTR.TNAME = '{treeView1.SelectedNode.Name}' GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
                     break;
                 case 3:
-                    table3 = controller.Update($"SELECT V_FIRM.TLGR AS Фирма,  PTS.UNTS AS [Учетный номер ТС],VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.GRP AS [Грузоподъёмность], PTS.NORMT AS [Расход топлива] FROM ((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE PTS.UNTS = {treeView1.SelectedNode.Name} GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;");
-                    dataGridView1.DataSource = table3;
+                    table = controller.Update($"SELECT V_FIRM.TLGR AS Фирма,  PTS.UNTS AS [Учетный номер ТС],VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.GRP AS [Грузоподъёмность], PTS.NORMT AS [Расход топлива] FROM ((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE PTS.UNTS = {treeView1.SelectedNode.Name} GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;");
                     break;
                 default:
                     throw new FormatException("Error of tree level");
-                    break;
             }
-
+            dataGridView1.DataSource = table;
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void Button1_Click_1(object sender, EventArgs e)
         {
             Form3 newForm = new Form3();
             newForm.Show();
