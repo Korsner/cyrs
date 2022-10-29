@@ -1,12 +1,6 @@
 ﻿using Sample.Controller;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Sample
@@ -70,26 +64,6 @@ namespace Sample
                 datasp = maskedTextBox1.Text;
             }
             controller.Add(unts,tid,firmid,grp,normt,datasp);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            DataTable table = controller.Update($"SELECT FIRMID FROM V_FIRM WHERE TLGR = '{comboBox1.SelectedItem.ToString()}';");
-            string firmid = "";
-            foreach (DataRow row in table.Rows)
-            {
-                firmid = row[2].ToString();
-                MessageBox.Show(firmid);
-            }
-            DataTable table1 = controller.Update($"SELECT TID FROM TIPTR WHERE TNAME = '{comboBox2.SelectedItem.ToString()}';");
-            string tid = "";
-            foreach (DataRow row in table.Rows)
-            {
-                tid = row[3].ToString();
-            }
-            string unts = textBox1.Text;
-            string grp = textBox2.Text;
-            string normt = textBox3.Text;
         }
     }
 }
