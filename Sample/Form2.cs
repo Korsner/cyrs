@@ -1,8 +1,6 @@
 ﻿using DbLibrary.Controller;
 using Sample.Controller;
-using System;
 using System.Data;
-using System.Windows.Forms;
 
 namespace Sample
 {
@@ -18,16 +16,16 @@ namespace Sample
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            DataTable table = controller.Update("SELECT TLGR FROM V_FIRM;");
+            DataTable table = controller.ReadTLGRs();
             foreach (DataRow row in table.Rows)
             {
                 comboBox1.Items.Add(row[0]);
             }
             comboBox1.SelectedIndex = 0;
-            DataTable table1 = controller.Update("SELECT TNAME FROM TIPTR;");
+            DataTable table1 = controller.ReadTNames();
             foreach (DataRow row in table1.Rows)
             {
-                comboBox2.Items.Add(row[1].ToString());
+                comboBox2.Items.Add(row[0].ToString());
             }
             comboBox2.SelectedIndex = 0;
 
@@ -40,17 +38,17 @@ namespace Sample
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            DataTable table = controller.Update($"SELECT FIRMID FROM V_FIRM WHERE TLGR = '{comboBox1.SelectedItem}';");
+            DataTable table = controller.ReadFirm(comboBox1.SelectedItem.ToString());
             string firmid = "";
             foreach (DataRow row in table.Rows)
             {
-                firmid = row[2].ToString();
+                firmid = row[0].ToString();
             }
-            DataTable table1 = controller.Update($"SELECT TID FROM TIPTR WHERE TNAME = '{comboBox2.SelectedItem}';");
+            DataTable table1 = controller.ReadTipTR(comboBox2.SelectedItem.ToString());
             string tid = "";
-            foreach (DataRow row in table.Rows)
+            foreach (DataRow row in table1.Rows)
             {
-                tid = row[3].ToString();
+                tid = row[0].ToString();
             }
             string unts = textBox1.Text;
             string grp = textBox2.Text;

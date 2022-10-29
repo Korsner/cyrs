@@ -56,6 +56,15 @@ INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT
 WHERE PTS.UNTS = @UNTS
 GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;
 ";
+
+        public static string ReadTLGRs = "SELECT TLGR FROM V_FIRM;";
+
+        public static string ReadTNames = "SELECT TNAME FROM TIPTR;";
+
+        public static string FirmFilter = "SELECT FIRMID FROM V_FIRM WHERE TLGR = @TLGR;";
+
+        public static string TipTRFilter = "SELECT TID FROM TIPTR WHERE TNAME = @TNAME;";
+
     }
 
     public class Query
@@ -106,6 +115,26 @@ GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;
         {
             var command = new OleDbCommand(SQL.ReadDataByUNTS, connection);
             command.Parameters.Add("UNTS", unts);
+            return ReadData(command);
+        }
+
+        public DataTable ReadTLGRs() => 
+            ReadData(new OleDbCommand(SQL.ReadTLGRs, connection));
+
+        public DataTable ReadTNames() => 
+            ReadData(new OleDbCommand(SQL.ReadTNames, connection));
+
+        public DataTable ReadFirm(string tlgr)
+        {
+            var command = new OleDbCommand(SQL.FirmFilter, connection);
+            command.Parameters.Add("TLGR", tlgr);
+            return ReadData(command);
+        }
+
+        public DataTable ReadTipTR(string tname)
+        {
+            var command = new OleDbCommand(SQL.TipTRFilter, connection);
+            command.Parameters.Add("TNAME", tname);
             return ReadData(command);
         }
 
