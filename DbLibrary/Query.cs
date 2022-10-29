@@ -1,23 +1,117 @@
-﻿using System.Data.OleDb;
-using System.Data;
+﻿using System.Data;
+using System.Data.OleDb;
 
 namespace DbLibrary.Controller
 {
+    public static class SQL
+    {
+        public static string ReadData = @"
+SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] 
+FROM(
+    (V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) 
+    INNER JOIN TIPTR ON TIPTR.TID = PTS.TID
+) 
+INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT 
+GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;";
+
+        public static string ReadDataByTLGR = @"
+SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] 
+FROM(
+    (V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) 
+    INNER JOIN TIPTR ON TIPTR.TID = PTS.TID
+) 
+INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT 
+WHERE V_FIRM.TLGR = @TLGR
+GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;
+";
+
+        public static string ReadDataBySHNAME = @"
+SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС]
+FROM(
+    (V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) 
+    INNER JOIN TIPTR ON TIPTR.TID = PTS.TID
+) 
+INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT 
+WHERE VIDTC.SHNAME = @SHNAME
+GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;";
+
+        public static string ReadDataByTName = @"
+SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС]
+FROM(
+    (V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID)
+    INNER JOIN TIPTR ON TIPTR.TID = PTS.TID
+)
+INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT 
+WHERE TIPTR.TNAME = @TNAME 
+GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;
+";
+
+        public static string ReadDataByUNTS = @"
+SELECT V_FIRM.TLGR AS Фирма, PTS.UNTS AS [Учетный номер ТС],VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.GRP AS [Грузоподъёмность], PTS.NORMT AS [Расход топлива]
+FROM (
+    (V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID)
+    INNER JOIN TIPTR ON TIPTR.TID = PTS.TID
+)
+INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT
+WHERE PTS.UNTS = @UNTS
+GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;
+";
+    }
+
     public class Query
     {
-        OleDbConnection     connection;
-        OleDbCommand        command;
-        OleDbDataAdapter    dataAdapter;
-        DataTable           dt;
+        OleDbConnection connection;
+        OleDbCommand command;
+        OleDbDataAdapter dataAdapter;
 
         public Query(string Conn)
         {
             connection = new OleDbConnection(Conn);
-            dt = new DataTable();
+        }
+        public DataTable ReadData(OleDbCommand command)
+        {
+            var dt = new DataTable();
+            command.Connection.Open();
+            dataAdapter = new OleDbDataAdapter(command);
+            dt.Clear();
+            dataAdapter.Fill(dt);
+            command.Connection.Close();
+            return dt;
+        }
+
+        public DataTable ReadData() => ReadData(new OleDbCommand(SQL.ReadData, connection));
+
+        public DataTable ReadDataByTLGR(string tlgr)
+        {
+            var command = new OleDbCommand(SQL.ReadDataByTLGR, connection);
+            command.Parameters.Add("TLGR", tlgr);
+            return ReadData(command);
+        }
+
+        public DataTable ReadDataBySHNAME(string shname)
+        {
+            var command = new OleDbCommand(SQL.ReadDataBySHNAME, connection);
+            command.Parameters.Add("SHNAME", shname);
+            return ReadData(command);
+        }
+
+        public DataTable ReadDataByTNAME(string tname)
+        {
+            var command = new OleDbCommand(SQL.ReadDataByTName, connection);
+            command.Parameters.Add("TNAME", tname);
+            return ReadData(command);
+        }
+
+        public DataTable ReadDataByUNTS(string unts)
+        {
+            var command = new OleDbCommand(SQL.ReadDataByUNTS, connection);
+            command.Parameters.Add("UNTS", unts);
+            return ReadData(command);
         }
 
         public DataTable Update(string select)
         {
+            var dt = new DataTable();
             connection.Open();
             dataAdapter = new OleDbDataAdapter(select, connection);
             dt.Clear();
@@ -48,10 +142,11 @@ namespace DbLibrary.Controller
             connection.Close();
         }
 
-        public void Delete(int UNTS)
+        public void DeletePTS(int UNTS)
         {
             connection.Open();
-            command = new OleDbCommand($"DELETE FROM PTS WHERE UNTS = {UNTS}", connection);
+            command = new OleDbCommand($"DELETE FROM PTS WHERE UNTS = @UNTS", connection);
+            command.Parameters.AddWithValue("UNTS", UNTS);
             command.ExecuteNonQuery();
             connection.Close();
         }

@@ -1,8 +1,6 @@
 ﻿using DbLibrary.Controller;
 using Sample.Controller;
-using System;
 using System.Data;
-using System.Windows.Forms;
 
 namespace Sample
 {
@@ -18,19 +16,20 @@ namespace Sample
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            Form3 newForm = new Form3();
+            var newForm = new Form3();
             newForm.Show();
         }
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            Form2 newForm = new Form2();
+            var newForm = new Form2();
             newForm.Show();
         }
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            controller.Delete(int.Parse(dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells["Учетный номер ТС"].Value.ToString()));
+            var unts = int.Parse(dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells["Учетный номер ТС"].Value.ToString());
+            controller.DeletePTS(unts);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -40,7 +39,7 @@ namespace Sample
 
         public void NodeBuilder()
         {
-            DataTable table = controller.Update("SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
+            DataTable table = controller.ReadData();
             foreach (DataRow row in table.Rows)
             {
                 if (!treeView1.Nodes.ContainsKey(row[0].ToString()))
@@ -65,24 +64,15 @@ namespace Sample
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             int caseSwitch = treeView1.SelectedNode.Level;
-            DataTable table;
-            switch (caseSwitch)
+            var param = treeView1.SelectedNode.Name;
+            DataTable table = caseSwitch switch
             {
-                case 0:
-                    table = controller.Update($"SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE V_FIRM.TLGR = '{treeView1.SelectedNode.Name}' GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
-                    break;
-                case 1:
-                    table = controller.Update($"SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE VIDTC.SHNAME = '{treeView1.SelectedNode.Name}' GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
-                    break;
-                case 2:
-                    table = controller.Update($"SELECT V_FIRM.TLGR AS Фирма, VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.UNTS AS [Учетный номер ТС] FROM((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE TIPTR.TNAME = '{treeView1.SelectedNode.Name}' GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS;");
-                    break;
-                case 3:
-                    table = controller.Update($"SELECT V_FIRM.TLGR AS Фирма,  PTS.UNTS AS [Учетный номер ТС],VIDTC.SHNAME AS [Вид ТС], TIPTR.TNAME AS [Тип ТС], PTS.GRP AS [Грузоподъёмность], PTS.NORMT AS [Расход топлива] FROM ((V_FIRM INNER JOIN PTS ON V_FIRM.FIRMID = PTS.FIRMID) INNER JOIN TIPTR ON TIPTR.TID = PTS.TID) INNER JOIN VIDTC ON VIDTC.VIDT = TIPTR.VIDT WHERE PTS.UNTS = {treeView1.SelectedNode.Name} GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;");
-                    break;
-                default:
-                    throw new FormatException("Error of tree level");
-            }
+                0 => controller.ReadDataByTLGR(param),
+                1 => controller.ReadDataBySHNAME(param),
+                2 => controller.ReadDataByTNAME(param),
+                3 => controller.ReadDataByUNTS(param),
+                _ => throw new FormatException("Error of tree level"),
+            };
             dataGridView1.DataSource = table;
         }
 
