@@ -75,10 +75,13 @@ namespace LbLibraryUnitTests
         }
 
         [Test]
-        public void AddWrongDataDoesntThrowException()
+        public void AddTests()
         {
             var c = query.Add("--##", null, "1", "2", "3", "4");
             Assert.AreEqual(-1, c);
+
+            c = query.Add("100", "2", "1", "2", "3", "10/10/2022");
+            Assert.AreEqual(1, c);
         }
 
         [Test]
