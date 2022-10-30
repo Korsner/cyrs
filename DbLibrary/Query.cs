@@ -71,6 +71,7 @@ namespace DbLibrary.Controller
             try
             {
                 using var connection = new OleDbConnection(conn);
+                connection.Open();
                 using var command = new OleDbCommand(SQL.UpdatePTS, connection);
                 command.Parameters.Add("UNTS1", unts1);
                 command.Parameters.Add("TID", tId);
@@ -91,6 +92,7 @@ namespace DbLibrary.Controller
             try
             {
                 using var connection = new OleDbConnection(conn);
+                connection.Open();
                 using var command = new OleDbCommand($"INSERT INTO PTS(UNTS, TID, FIRMID, GRP, NORMT, DATASP) VALUES(@UNTS, @TID, @FIRMID, @GRP, @NORMT, @DATASP)", connection);
                 command.Parameters.AddWithValue("UNTS", UNTS);
                 command.Parameters.AddWithValue("TID", TID);
@@ -111,6 +113,7 @@ namespace DbLibrary.Controller
             try
             {
                 using var connection = new OleDbConnection(conn);
+                connection.Open();
                 using var command = new OleDbCommand($"DELETE FROM PTS WHERE UNTS = @UNTS", connection);
                 command.Parameters.AddWithValue("UNTS", UNTS);
                 return command.ExecuteNonQuery();
