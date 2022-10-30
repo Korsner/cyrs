@@ -34,5 +34,12 @@ namespace LbLibraryUnitTests
             var c = query.DeletePTS(-1);
             Assert.AreEqual(0, c);
         }
+
+        [Test]
+        public void DeletePTSTest2()
+        {
+            var c = query.DeletePTS(0);
+            Assert.AreEqual(1, c);
+        }
     }
 }
