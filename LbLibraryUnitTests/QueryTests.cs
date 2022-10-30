@@ -25,7 +25,7 @@ namespace LbLibraryUnitTests
         public void ReadDataReturnsCorrectNumberOfRows()
         {
             var data = query.ReadData();
-            Assert.AreEqual(22, data.Rows.Count);
+            Assert.AreEqual(23, data.Rows.Count);
 
             data = query.ReadTLGRs();
             Assert.AreEqual(2, data.Rows.Count);
