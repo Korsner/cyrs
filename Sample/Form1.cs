@@ -12,24 +12,41 @@ namespace Sample
         {
             InitializeComponent();
             controller = new Query(ConnectionString.ConnStr);
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            var newForm = new Form3();
-            newForm.Show();
+            dataGridView1.AllowUserToAddRows = false;
         }
 
         private void Button2_Click(object sender, EventArgs e)
         {
             var newForm = new Form2();
-            newForm.Show();
+            var dr = newForm.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                MessageBox.Show("Запись добавлена!");
+                var node = 
+                    treeView1.SelectedNode.Level == 3 ? 
+                        treeView1.SelectedNode.Parent : 
+                        treeView1.SelectedNode;
+                NodeBuilder();
+                treeView1.SelectedNode =
+                    treeView1.Nodes.Find(node.Name, true).FirstOrDefault();
+                SelectionChanged();
+            }
+            else if (dr == DialogResult.Cancel)
+            {
+                MessageBox.Show("Произошла ошибка!");
+            }
         }
 
         private void Button3_Click(object sender, EventArgs e)
         {
             var unts = int.Parse(dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells["Учетный номер ТС"].Value.ToString());
-            controller.DeletePTS(unts);
+            var c = controller.DeletePTS(unts);
+            if (c > 0)
+            {
+                MessageBox.Show("Запись удалена!");
+                NodeBuilder();
+                SelectionChanged();
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -39,6 +56,7 @@ namespace Sample
 
         public void NodeBuilder()
         {
+            treeView1.Nodes.Clear();
             DataTable table = controller.ReadData();
             foreach (DataRow row in table.Rows)
             {
@@ -61,8 +79,13 @@ namespace Sample
             }
         }
 
-        private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        private void SelectionChanged()
         {
+            if (treeView1.SelectedNode == null)
+            {
+                dataGridView1.DataSource = null;
+                return;
+            }
             int caseSwitch = treeView1.SelectedNode.Level;
             var param = treeView1.SelectedNode.Name;
             DataTable table = caseSwitch switch
@@ -76,10 +99,31 @@ namespace Sample
             dataGridView1.DataSource = table;
         }
 
+        private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            SelectionChanged();
+        }
+
         private void Button1_Click_1(object sender, EventArgs e)
         {
             Form3 newForm = new Form3();
-            newForm.Show();
+            var dr = newForm.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                MessageBox.Show("Запись обновлена!");
+                var node = 
+                    treeView1.SelectedNode.Level == 3 ? 
+                        treeView1.SelectedNode.Parent : 
+                        treeView1.SelectedNode;
+                NodeBuilder();
+                treeView1.SelectedNode = 
+                    treeView1.Nodes.Find(node.Name, true).FirstOrDefault();
+                SelectionChanged();
+            }
+            else if (dr == DialogResult.Cancel)
+            {
+                MessageBox.Show("Произошла ошибка!");
+            }
         }
     }
 }

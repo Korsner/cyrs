@@ -15,7 +15,14 @@ namespace Sample
 
         private void Form3_Load(object sender, EventArgs e)
         {
-            dataGridView1.DataSource = controller.ReadDetailedData();
+            dataGridView1.AllowUserToAddRows = false;
+            var dr = controller.ReadDetailedData();
+            dataGridView1.DataSource = dr;
+            if (dr == null)
+            {
+                DialogResult = DialogResult.Cancel;
+                return;
+            }
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -26,7 +33,7 @@ namespace Sample
         private void Button2_Click(object sender, EventArgs e)
         {
             var unts = int.Parse(dataGridView1.Rows[dataGridView1.CurrentRow.Index].Cells["Учетный номер ТС"].Value.ToString()).ToString();
-            controller.UpdatePTS(
+            var c = controller.UpdatePTS(
                 textBox3.NullIfEmpty(),
                 textBox2.NullIfEmpty(),
                 textBox1.NullIfEmpty(),
@@ -34,6 +41,8 @@ namespace Sample
                 textBox5.NullIfEmpty(),
                 unts
                 );
+            DialogResult = c > 0 ? DialogResult.OK : DialogResult.Cancel;
+            this.Close();
         }
     }
 }
