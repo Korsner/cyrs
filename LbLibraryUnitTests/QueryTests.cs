@@ -1,5 +1,6 @@
 ﻿using DbLibrary.Controller;
 using NUnit.Framework;
+using System.Data;
 
 namespace LbLibraryUnitTests
 {
@@ -24,13 +25,12 @@ namespace LbLibraryUnitTests
         [Test]
         public void ReadDataReturnsCorrectNumberOfRows()
         {
-            var data = query.ReadData();
-            Assert.AreEqual(23, data.Rows.Count);
-
-            data = query.ReadTLGRs();
+            var data = query.ReadTLGRs();
+            Assert.IsNotNull(data);
             Assert.AreEqual(2, data.Rows.Count);
 
             data = query.ReadTNames();
+            Assert.IsNotNull(data);
             Assert.AreEqual(8, data.Rows.Count);
         }
 
@@ -38,18 +38,21 @@ namespace LbLibraryUnitTests
         public void ReadFirmTest()
         {
             var data = query.ReadFirm("Деловые линии");
+            Assert.IsNotNull(data);
             Assert.AreEqual(1, data.Rows.Count);
             Assert.AreEqual(1, data.Columns.Count);
 
             Assert.AreEqual("2", data.Rows[0].ItemArray[0].ToString());
 
             data = query.ReadFirm("Зевс");
+            Assert.IsNotNull(data);
             Assert.AreEqual(1, data.Rows.Count);
             Assert.AreEqual(1, data.Columns.Count);
 
             Assert.AreEqual("1", data.Rows[0].ItemArray[0].ToString());
 
             data = query.ReadFirm("Юпитер");
+            Assert.IsNotNull(data);
             Assert.AreEqual(0, data.Rows.Count);
             Assert.AreEqual(1, data.Columns.Count);
         }
@@ -58,18 +61,21 @@ namespace LbLibraryUnitTests
         public void ReadTipTR()
         {
             var data = query.ReadTipTR("Автомобиль-тягач");
+            Assert.IsNotNull(data);
             Assert.AreEqual(1, data.Rows.Count);
             Assert.AreEqual(1, data.Columns.Count);
 
             Assert.AreEqual("4", data.Rows[0].ItemArray[0].ToString());
 
             data = query.ReadTipTR("Специальный прицеп");
+            Assert.IsNotNull(data);
             Assert.AreEqual(1, data.Rows.Count);
             Assert.AreEqual(1, data.Columns.Count);
 
             Assert.AreEqual("7", data.Rows[0].ItemArray[0].ToString());
 
             data = query.ReadTipTR("Автомобиль тягач");
+            Assert.IsNotNull(data);
             Assert.AreEqual(0, data.Rows.Count);
             Assert.AreEqual(1, data.Columns.Count);
         }
@@ -89,6 +95,18 @@ namespace LbLibraryUnitTests
         {
             var c = query.DeletePTS(-1);
             Assert.AreEqual(0, c);
+
+            c = query.DeletePTS(15);
+            Assert.AreEqual(1, c);
+        }
+
+        [Test]
+        public void ReadDetailedDataTest()
+        {
+            var data = query.ReadDetailedData();
+            Assert.IsNotNull(data);
+
+            Assert.AreEqual(7, data.Columns.Count);
         }
     }
 }
