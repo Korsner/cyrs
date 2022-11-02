@@ -108,5 +108,29 @@ namespace LbLibraryUnitTests
 
             Assert.AreEqual(7, data.Columns.Count);
         }
+
+        [Test]
+        public void UpdatePTSTest()
+        {
+            var detailedData = query.ReadDetailedData();
+            Assert.IsNotNull(detailedData);
+
+            var row =
+                detailedData.Rows.OfType<DataRow>()
+                   .FirstOrDefault(row => row.Field<int>("Учетный номер ТС") == 4);
+            Assert.IsNotNull(row);
+            Assert.AreEqual(7, detailedData.Columns.Count);
+            Assert.AreEqual("Зевс", row[1]);
+            Assert.AreEqual("Самоходный тягач", row[3]);
+            Assert.AreEqual("Седельный тягач", row[4]);
+            Assert.AreEqual(30, row[5]);
+            Assert.AreEqual(25, row[6]);
+
+            var c = query.UpdatePTS(null, null, null, "40", "50", "4");
+            Assert.AreEqual(-1, c);
+
+            c = query.UpdatePTS("4", null, null, "40", "50", "4");
+            Assert.AreEqual(1, c);
+        }
     }
 }
