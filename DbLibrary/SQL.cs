@@ -73,11 +73,11 @@ GROUP BY V_FIRM.TLGR, VIDTC.SHNAME, TIPTR.TNAME, PTS.UNTS, PTS.GRP, PTS.NORMT;
 
         public static string UpdatePTS = @"
 UPDATE PTS SET 
-    UNTS = COALESCE(@UNTS1, UNTS), 
-    TID = COALESCE(@TID, TID),
-    FIRMID = COALESCE(@FIRMID, FIRMID), 
-    GRP = COALESCE(@GRP, GRP),
-    NORMT = COALESCE(@NORMT, NORMT),
+    UNTS = iif(IsNull(@UNTS1), UNTS, @UNTS1), 
+    TID = iif(@TID = -1, TID, @TID),
+    FIRMID = iif(@FIRMID = -1, FIRMID, @FIRMID), 
+    GRP = iif(IsNull(@GRP), GRP, @GRP),
+    NORMT = iif(IsNull(@NORMT), NORMT, @NORMT)
 WHERE UNTS = @UNTS2";
     }
 }
