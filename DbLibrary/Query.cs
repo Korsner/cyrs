@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Data;
 using System.Data.OleDb;
+using System.Diagnostics;
 
 namespace DbLibrary.Controller
 {
     public class Query
     {
         private readonly string conn;
-        public Query(string Conn)
-        {
-            conn = Conn;
-        }
+        public Query(string Conn) => conn = Conn;
 
         private DataTable ReadDataTable(Func<OleDbCommand> getCommand)
         {
@@ -26,7 +24,11 @@ namespace DbLibrary.Controller
                 dataAdapter.Fill(dt);
                 return dt;
             }
-            catch { return null; }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return null;
+            }
         }
 
         public DataTable ReadData() =>
@@ -73,18 +75,19 @@ namespace DbLibrary.Controller
                 using var connection = new OleDbConnection(conn);
                 connection.Open();
                 using var command = new OleDbCommand(SQL.UpdatePTS, connection);
-                command.Parameters.Add("UNTS1", unts1);
+                command.Parameters.AddWithValue("UNTS1", unts1);
                 var tID = string.IsNullOrWhiteSpace(tId) ? "-1" : tId;
-                command.Parameters.Add("TID", tID);
+                command.Parameters.AddWithValue("TID", tID);
                 var fID = string.IsNullOrWhiteSpace(firmId) ? "-1" : tId;
-                command.Parameters.Add("FIRMID", fID);
-                command.Parameters.Add("GRP", grp);
-                command.Parameters.Add("NORMT", normt);
-                command.Parameters.Add("UNTS2", unts2);
+                command.Parameters.AddWithValue("FIRMID", fID);
+                command.Parameters.AddWithValue("GRP", grp);
+                command.Parameters.AddWithValue("NORMT", normt);
+                command.Parameters.AddWithValue("UNTS2", unts2);
                 return command.ExecuteNonQuery();
             }
-            catch
+            catch (Exception e)
             {
+                Debug.WriteLine(e);
                 return -1;
             }
         }
@@ -104,8 +107,9 @@ namespace DbLibrary.Controller
                 command.Parameters.AddWithValue("DATASP", DATASP);
                 return command.ExecuteNonQuery();
             }
-            catch
+            catch (Exception e)
             {
+                Debug.WriteLine(e);
                 return -1;
             }
         }
@@ -120,8 +124,9 @@ namespace DbLibrary.Controller
                 command.Parameters.AddWithValue("UNTS", UNTS);
                 return command.ExecuteNonQuery();
             }
-            catch
+            catch (Exception e)
             {
+                Debug.WriteLine(e);
                 return -1;
             }
         }
