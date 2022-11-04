@@ -31,7 +31,7 @@ namespace Sample
                     treeView1.Nodes.Find(node.Name, true).FirstOrDefault();
                 SelectionChanged();
             }
-            else if (dr == DialogResult.Cancel)
+            else if (dr == DialogResult.TryAgain)
             {
                 MessageBox.Show("Произошла ошибка!");
             }
@@ -46,6 +46,10 @@ namespace Sample
                 MessageBox.Show("Запись удалена!");
                 NodeBuilder();
                 SelectionChanged();
+            }
+            else
+            {
+                MessageBox.Show("Произошла ошибка!");
             }
         }
 
@@ -120,7 +124,7 @@ namespace Sample
                     treeView1.Nodes.Find(node.Name, true).FirstOrDefault();
                 SelectionChanged();
             }
-            else if (dr == DialogResult.Cancel)
+            else if (dr == DialogResult.TryAgain)
             {
                 MessageBox.Show("Произошла ошибка!");
             }

@@ -35,7 +35,7 @@ namespace Sample
                     return;
                 }
             }
-            DialogResult = DialogResult.Cancel;
+            DialogResult = DialogResult.TryAgain;
             this.Close();
         }
 
@@ -75,7 +75,7 @@ namespace Sample
                     }
                 }
             }
-            DialogResult = DialogResult.Cancel;
+            DialogResult = DialogResult.TryAgain;
             this.Close();
         }
     }
