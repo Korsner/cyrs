@@ -74,8 +74,10 @@ namespace DbLibrary.Controller
                 connection.Open();
                 using var command = new OleDbCommand(SQL.UpdatePTS, connection);
                 command.Parameters.Add("UNTS1", unts1);
-                command.Parameters.Add("TID", tId);
-                command.Parameters.Add("FIRMID", firmId);
+                var tID = string.IsNullOrWhiteSpace(tId) ? "-1" : tId;
+                command.Parameters.Add("TID", tID);
+                var fID = string.IsNullOrWhiteSpace(firmId) ? "-1" : tId;
+                command.Parameters.Add("FIRMID", fID);
                 command.Parameters.Add("GRP", grp);
                 command.Parameters.Add("NORMT", normt);
                 command.Parameters.Add("UNTS2", unts2);
