@@ -20,7 +20,7 @@ namespace Sample
             dataGridView1.DataSource = dr;
             if (dr == null)
             {
-                DialogResult = DialogResult.Cancel;
+                DialogResult = DialogResult.TryAgain;
                 return;
             }
         }
@@ -41,7 +41,7 @@ namespace Sample
                 textBox5.NullIfEmpty(),
                 unts
                 );
-            DialogResult = c > 0 ? DialogResult.OK : DialogResult.Cancel;
+            DialogResult = c > 0 ? DialogResult.OK : DialogResult.TryAgain;
             this.Close();
         }
     }
